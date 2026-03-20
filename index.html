@@ -1,100 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>BUSCAR DNI</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    input { padding: 8px; font-size: 16px; }
-    button { padding: 8px 12px; margin: 5px; font-size: 16px; }
-    #resultado { margin-top: 20px; font-size: 18px; font-weight: bold; }
-    .ok { color: green; }
-    .error { color: red; }
-  </style>
-</head>
-<body>
-  <h1>BUSCAR DNI</h1>
-  <input type="text" id="dni" placeholder="Ingrese DNI">
-  <br>
-  <button onclick="verificar()">Verificar</button>
-  <button onclick="limpiar()">Limpiar</button>
-  <div id="resultado"></div>
+<input type="text" id="dni" placeholder="Ingrese DNI" maxlength="8" oninput="validarDNI()">
+<br>
+<button id="btnVerificar" onclick="verificar()" disabled>Verificar</button>
+<button onclick="limpiar()">Limpiar</button>
+<div id="resultado"></div>
 
-  <script>
-    // 🔗 Enlace CSV (solo cambia aquí si Google genera uno nuevo)
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yf0o4_bk8CmPKzNB4DgebCSqItCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hIaQ/pub?output=csv";
+<script>
+function validarDNI() {
+  const dni = document.getElementById("dni").value.trim();
+  const btn = document.getElementById("btnVerificar");
+  // habilitar solo si tiene exactamente 8 dígitos numéricos
+  if (/^\d{8}$/.test(dni)) {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
 
-    async function verificar() {
-      const dni = document.getElementById("dni").value.trim();
-      if (!dni) {
-        document.getElementById("resultado").innerHTML = "<span class='error'>❌ Ingrese un DNI</span>";
-        return;
-      }
-
-      try {
-        const response = await fetch(CSV_URL);
-        const data = await response.text();
-        const filas = data.split("\n").map(f => f.split(","));
-
-        // Buscar fila por DNI (columna A = fila[0])
-        const filaEncontrada = filas.find(fila => fila[0] === dni);
-
-        if (!filaEncontrada) {
-          document.getElementById("resultado").innerHTML = "<span class='ok'>✅ SI - Registrar participante</span>";
-          return;
-        }
-
-        const nombre = filaEncontrada[8];    // Columna I = Participantes
-        const hoy = filaEncontrada[11];      // Columna L = tiempo transcurrido
-        const categoria = filaEncontrada[13]; // Columna N = Magrupada2
-
-        let resultado = "";
-        let leyenda = "";
-
-        // Normalizar categoría
-        const cat = categoria.toLowerCase();
-
-        if (["focus","pretest","compra simulada","mercadito"].includes(cat)) {
-          const totalMeses = convertirATotalMeses(hoy);
-          if (totalMeses > 24) {
-            resultado = "<span class='ok'>✅ SI</span>";
-            leyenda = categoria + " + 2 años";
-          } else {
-            resultado = "<span class='error'>❌ NO</span>";
-            leyenda = categoria + " - 2 años";
-          }
-        } else if (cat === "otros") {
-          const totalMeses = convertirATotalMeses(hoy);
-          if (totalMeses > 6) {
-            resultado = "<span class='ok'>✅ SI</span>";
-            leyenda = "Otros + 6 meses";
-          } else {
-            resultado = "<span class='error'>❌ NO</span>";
-            leyenda = "Otros - 6 meses";
-          }
-        }
-
-        document.getElementById("resultado").innerHTML = resultado + " - " + nombre + " (" + leyenda + ")";
-      } catch (error) {
-        document.getElementById("resultado").innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
-        console.error(error);
-      }
-    }
-
-    function limpiar() {
-      document.getElementById("dni").value = "";
-      document.getElementById("resultado").innerHTML = "";
-    }
-
-    // 📌 Convierte "X años Y meses" en total de meses
-    function convertirATotalMeses(texto) {
-      let años = 0, meses = 0;
-      const matchAnios = texto.match(/(\d+)\s*años/);
-      const matchMeses = texto.match(/(\d+)\s*mes/);
-      if (matchAnios) años = parseInt(matchAnios[1]);
-      if (matchMeses) meses = parseInt(matchMeses[1]);
-      return (años * 12) + meses;
-    }
-  </script>
-</body>
-</html>
+function limpiar() {
+  document.getElementById("dni").value = "";
+  document.getElementById("resultado").innerHTML = "";
+  document.getElementById("btnVerificar").disabled = true; // vuelve a deshabilitar
+}
+</script>
