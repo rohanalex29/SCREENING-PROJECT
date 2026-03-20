@@ -29,11 +29,12 @@
       }
 
       try {
-        const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yfOo4_bk8CmPKzNB4DgebCSqltCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hlaQ/pub?output=csv");
+        // Enlace CSV publicado desde tu Google Sheets
+        const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yf0o4_bk8CmPKzNB4DgebCSqItCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hIaQ/pub?output=csv");
         const data = await response.text();
         const filas = data.split("\n").map(f => f.split(","));
 
-        // Buscar fila por DNI
+        // Buscar fila por DNI (columna A = fila[0])
         const filaEncontrada = filas.find(fila => fila[0] === dni);
 
         if (!filaEncontrada) {
@@ -41,25 +42,30 @@
           return;
         }
 
-        const nombre = filaEncontrada[8];   // Columna I
-        const hoy = filaEncontrada[11];     // Columna L
-        const categoria = filaEncontrada[13]; // Columna N
+        const nombre = filaEncontrada[8];    // Columna I = Participantes
+        const hoy = filaEncontrada[11];      // Columna L = tiempo transcurrido
+        const categoria = filaEncontrada[13]; // Columna N = Magrupada2
 
         let resultado = "";
         let leyenda = "";
 
-        if (["focus","pretest","compra simulada","mercadito"].includes(categoria.toLowerCase())) {
+        // Normalizar categoría
+        const cat = categoria.toLowerCase();
+
+        if (["focus","pretest","compra simulada","mercadito"].includes(cat)) {
           // Comparar contra 2 años
-          if (hoy.includes("años") && parseInt(hoy) > 2) {
+          const años = extraerAnios(hoy);
+          if (años > 2) {
             resultado = "<span class='ok'>✅ SI</span>";
             leyenda = categoria + " + 2 años";
           } else {
             resultado = "<span class='error'>❌ NO</span>";
             leyenda = categoria + " - 2 años";
           }
-        } else if (categoria.toLowerCase() === "otros") {
+        } else if (cat === "otros") {
           // Comparar contra 6 meses
-          if (hoy.includes("meses") && parseInt(hoy) > 6) {
+          const meses = extraerMeses(hoy);
+          if (meses > 6) {
             resultado = "<span class='ok'>✅ SI</span>";
             leyenda = "Otros + 6 meses";
           } else {
@@ -78,6 +84,17 @@
     function limpiar() {
       document.getElementById("dni").value = "";
       document.getElementById("resultado").innerHTML = "";
+    }
+
+    // Funciones auxiliares para interpretar "hoy" (ej. "11 años y 2 meses")
+    function extraerAnios(texto) {
+      const match = texto.match(/(\d+)\s*años/);
+      return match ? parseInt(match[1]) : 0;
+    }
+
+    function extraerMeses(texto) {
+      const match = texto.match(/(\d+)\s*mes/);
+      return match ? parseInt(match[1]) : 0;
     }
   </script>
 </body>
