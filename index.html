@@ -29,13 +29,11 @@
       const btnLimpiar = document.getElementById("btnLimpiar");
       const resultadoDiv = document.getElementById("resultado");
 
-      // Validador del botón
       dniInput.addEventListener("input", () => {
         const dni = dniInput.value.trim();
         btnVerificar.disabled = !(/^\d{8}$/.test(dni));
       });
 
-      // Acción de verificar
       btnVerificar.addEventListener("click", async () => {
         const dni = dniInput.value.trim();
         if (!dni) {
@@ -80,7 +78,6 @@
             }
           } else {
             resultado = "<span class='error'>❌ Categoría no reconocida</span>";
-            leyenda = "";
           }
 
           resultadoDiv.innerHTML = resultado + " - " + nombre + (leyenda ? " (" + leyenda + ")" : "");
@@ -90,7 +87,6 @@
         }
       });
 
-      // Acción de limpiar
       btnLimpiar.addEventListener("click", () => {
         dniInput.value = "";
         resultadoDiv.innerHTML = "";
@@ -98,11 +94,10 @@
       });
     });
 
-    // 📌 Convierte "X años Y meses" en total de meses
     function convertirATotalMeses(texto) {
       let años = 0, meses = 0;
       const matchAnios = texto.match(/(\d+)\s*años/);
-      const matchMeses = texto.match(/(\d+)\s*mes/); // reconoce "mes" y "meses"
+      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/); // reconoce "mes" y "meses"
       if (matchAnios) años = parseInt(matchAnios[1]);
       if (matchMeses) meses = parseInt(matchMeses[1]);
       return (años * 12) + meses;
