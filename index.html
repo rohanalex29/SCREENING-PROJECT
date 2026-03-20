@@ -48,7 +48,12 @@
           const filaEncontrada = filas.find(fila => fila[0] === dni);
 
           if (!filaEncontrada) {
-            resultadoDiv.innerHTML = "<span class='ok'>✅ SI - Registrar participante</span>";
+            resultadoDiv.innerHTML = `
+              Participante nuevo<br>
+              <span class="ok">SI</span><br>
+              <span class="ok">✅</span><br>
+              <span class="ok">Registrar</span>
+            `;
             return;
           }
 
@@ -57,30 +62,44 @@
           const categoria = (filaEncontrada[13] || "").trim().toLowerCase();
 
           let resultado = "";
+          let gancho = "";
           let leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
 
           if (["focus","pretest","compra simulada","mercadito"].includes(categoria)) {
             if (totalMeses > 24) {
-              resultado = "<span class='ok'>✅ SI</span>";
+              resultado = "SI";
+              gancho = "✅";
               leyenda = categoria + " + 2 años";
             } else {
-              resultado = "<span class='error'>❌ NO</span>";
+              resultado = "NO";
+              gancho = "❌";
               leyenda = categoria + " - 2 años";
             }
           } else if (categoria === "otros") {
             if (totalMeses > 6) {
-              resultado = "<span class='ok'>✅ SI</span>";
+              resultado = "SI";
+              gancho = "✅";
               leyenda = "Otros + 6 meses";
             } else {
-              resultado = "<span class='error'>❌ NO</span>";
+              resultado = "NO";
+              gancho = "❌";
               leyenda = "Otros - 6 meses";
             }
           } else {
-            resultado = "<span class='error'>❌ Categoría no reconocida</span>";
+            resultado = "NO";
+            gancho = "❌";
+            leyenda = "Categoría no reconocida";
           }
 
-          resultadoDiv.innerHTML = resultado + " - " + nombre + (leyenda ? " (" + leyenda + ")" : "");
+          // 👉 Orden: Nombre → Resultado → Gancho → Mensaje
+          const clase = (resultado === "SI") ? "ok" : "error";
+          resultadoDiv.innerHTML = `
+            ${nombre}<br>
+            <span class="${clase}">${resultado}</span><br>
+            <span class="${clase}">${gancho}</span><br>
+            <span class="${clase}">${leyenda}</span>
+          `;
         } catch (error) {
           resultadoDiv.innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
           console.error(error);
