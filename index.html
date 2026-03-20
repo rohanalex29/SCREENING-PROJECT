@@ -29,21 +29,46 @@
       }
 
       try {
-        // Enlace CSV publicado desde tu Google Sheets
         const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yfOo4_bk8CmPKzNB4DgebCSqltCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hlaQ/pub?output=csv");
         const data = await response.text();
-        const filas = data.split("\n");
+        const filas = data.split("\n").map(f => f.split(","));
 
-        // Buscar la fila que contiene el DNI
-        const filaEncontrada = filas.find(fila => fila.includes(dni));
+        // Buscar fila por DNI
+        const filaEncontrada = filas.find(fila => fila[0] === dni);
 
-        if (filaEncontrada) {
-          const columnas = filaEncontrada.split(",");
-          // Mostrar toda la fila (ejemplo: DNI + nombre + otros datos)
-          document.getElementById("resultado").innerHTML = "<span class='ok'>✅ DNI encontrado: " + columnas.join(" | ") + "</span>";
-        } else {
-          document.getElementById("resultado").innerHTML = "<span class='error'>❌ DNI no encontrado</span>";
+        if (!filaEncontrada) {
+          document.getElementById("resultado").innerHTML = "<span class='ok'>✅ SI - Registrar participante</span>";
+          return;
         }
+
+        const nombre = filaEncontrada[8];   // Columna I
+        const hoy = filaEncontrada[11];     // Columna L
+        const categoria = filaEncontrada[13]; // Columna N
+
+        let resultado = "";
+        let leyenda = "";
+
+        if (["focus","pretest","compra simulada","mercadito"].includes(categoria.toLowerCase())) {
+          // Comparar contra 2 años
+          if (hoy.includes("años") && parseInt(hoy) > 2) {
+            resultado = "<span class='ok'>✅ SI</span>";
+            leyenda = categoria + " + 2 años";
+          } else {
+            resultado = "<span class='error'>❌ NO</span>";
+            leyenda = categoria + " - 2 años";
+          }
+        } else if (categoria.toLowerCase() === "otros") {
+          // Comparar contra 6 meses
+          if (hoy.includes("meses") && parseInt(hoy) > 6) {
+            resultado = "<span class='ok'>✅ SI</span>";
+            leyenda = "Otros + 6 meses";
+          } else {
+            resultado = "<span class='error'>❌ NO</span>";
+            leyenda = "Otros - 6 meses";
+          }
+        }
+
+        document.getElementById("resultado").innerHTML = resultado + " - " + nombre + " (" + leyenda + ")";
       } catch (error) {
         document.getElementById("resultado").innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
         console.error(error);
