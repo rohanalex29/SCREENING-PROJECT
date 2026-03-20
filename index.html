@@ -29,16 +29,18 @@
       }
 
       try {
-        // Enlace CSV publicado desde Google Sheets
+        // Enlace CSV publicado desde tu Google Sheets
         const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yfOo4_bk8CmPKzNB4DgebCSqltCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hlaQ/pub?output=csv");
         const data = await response.text();
         const filas = data.split("\n");
 
-        // Buscar si el DNI aparece en alguna fila
-        const existe = filas.some(fila => fila.includes(dni));
+        // Buscar la fila que contiene el DNI
+        const filaEncontrada = filas.find(fila => fila.includes(dni));
 
-        if (existe) {
-          document.getElementById("resultado").innerHTML = "<span class='ok'>✅ DNI encontrado</span>";
+        if (filaEncontrada) {
+          const columnas = filaEncontrada.split(",");
+          // Mostrar toda la fila (ejemplo: DNI + nombre + otros datos)
+          document.getElementById("resultado").innerHTML = "<span class='ok'>✅ DNI encontrado: " + columnas.join(" | ") + "</span>";
         } else {
           document.getElementById("resultado").innerHTML = "<span class='error'>❌ DNI no encontrado</span>";
         }
