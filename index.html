@@ -8,26 +8,40 @@
       font-family: Arial, sans-serif;
       text-align: center;
       margin-top: 40px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      margin-bottom: 20px;
     }
     input {
-      padding: 18px;              /* más alto y cómodo */
-      font-size: 32px;            /* fuente muy grande */
-      width: 90%;                 /* ocupa casi toda la pantalla */
+      padding: 22px;              /* más alto y cómodo */
+      font-size: 34px;            /* fuente muy grande */
+      width: 95%;                 /* ocupa casi toda la pantalla */
       max-width: 500px;           /* límite en pantallas grandes */
       text-align: center;         /* centrado */
-      margin: 0 auto 25px auto;   /* centrado con espacio debajo */
+      margin: 0 auto 30px auto;   /* centrado con espacio debajo */
       border: 2px solid #333;
-      border-radius: 10px;
+      border-radius: 14px;
       display: block;             /* asegura que se centre */
+      background-color: #fff;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* sombra elegante */
     }
     button {
-      padding: 12px 18px;
-      margin: 8px;
+      padding: 14px 22px;
+      margin: 10px;
       font-size: 22px;
-      border-radius: 6px;
+      border-radius: 8px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
     }
     #resultado {
-      margin-top: 25px;
+      margin-top: 30px;
       font-size: 28px;   /* más grande para móvil */
       font-weight: bold;
       line-height: 1.8;  /* espacio entre líneas */
