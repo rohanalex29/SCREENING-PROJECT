@@ -4,49 +4,21 @@
   <meta charset="UTF-8">
   <title>BUSCAR DNI</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 40px;
-      background-color: #f0f0f0;
-    }
-    h1 {
-      margin-bottom: 25px;
-      font-size: 40px;   /* título grande */
-    }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; background-color: #f0f0f0; }
+    h1 { margin-bottom: 25px; font-size: 40px; }
     input {
-      padding: 22px;
-      font-size: 36px;   /* números grandes */
-      width: 95%;
-      max-width: 500px;
-      text-align: center;
-      margin: 0 auto 30px auto;
-      border: 2px solid #333;
-      border-radius: 14px;
-      display: block;
-      background-color: #fff;
+      padding: 22px; font-size: 36px; width: 95%; max-width: 500px;
+      text-align: center; margin: 0 auto 30px auto; border: 2px solid #333;
+      border-radius: 14px; display: block; background-color: #fff;
       box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
     button {
-      padding: 16px 24px;
-      margin: 12px;
-      font-size: 26px;   /* botones grandes */
-      border-radius: 10px;
-      border: none;
-      background-color: #333;
-      color: #fff;
-      cursor: pointer;
+      padding: 16px 24px; margin: 12px; font-size: 26px;
+      border-radius: 10px; border: none; background-color: #333;
+      color: #fff; cursor: pointer;
     }
-    button:disabled {
-      background-color: #aaa;
-      cursor: not-allowed;
-    }
-    #resultado {
-      margin-top: 35px;
-      font-size: 32px;   /* respuesta grande */
-      font-weight: bold;
-      line-height: 2;    /* espacio entre líneas */
-    }
+    button:disabled { background-color: #aaa; cursor: not-allowed; }
+    #resultado { margin-top: 35px; font-size: 32px; font-weight: bold; line-height: 2; }
     .ok { color: #008000; }
     .error { color: #cc0000; }
   </style>
@@ -95,9 +67,9 @@
             return;
           }
 
-          const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I: nombre
-          const hoy = (filaEncontrada[11] || "").trim();               // Columna L: tiempo acumulado
-          const categoria = (filaEncontrada[13] || "").trim().toLowerCase(); // Columna N: categoría
+          const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I
+          const hoy = (filaEncontrada[11] || "").trim();               // Columna L
+          const categoria = (filaEncontrada[13] || "").trim().toLowerCase(); // Columna N
 
           let resultado = "", gancho = "", leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
