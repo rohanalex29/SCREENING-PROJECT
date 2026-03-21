@@ -95,9 +95,9 @@
             return;
           }
 
-          const nombre = (filaEncontrada[8] || "Sin nombre").trim();
-          const hoy = (filaEncontrada[11] || "").trim();
-          const categoria = (filaEncontrada[13] || "").trim().toLowerCase();
+          const nombre = (filaEncontrada[7] || "Sin nombre").trim();   // Columna H: nombre
+          const hoy = (filaEncontrada[11] || "").trim();               // Columna L: tiempo acumulado
+          const categoria = (filaEncontrada[14] || "").trim().toLowerCase(); // Columna N: categoría
 
           let resultado = "", gancho = "", leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
@@ -149,4 +149,3 @@
   </script>
 </body>
 </html>
-  
