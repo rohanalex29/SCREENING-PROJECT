@@ -4,12 +4,35 @@
   <meta charset="UTF-8">
   <title>BUSCAR DNI</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    input { padding: 8px; font-size: 16px; width: 200px; text-align: center; }
-    button { padding: 8px 12px; margin: 5px; font-size: 16px; }
-    #resultado { margin-top: 20px; font-size: 20px; font-weight: bold; }
-    .ok { color: green; }
-    .error { color: red; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input {
+      padding: 14px;              /* más alto y cómodo */
+      font-size: 28px;            /* fuente grande para móvil */
+      width: 80%;                 /* ocupa casi toda la pantalla */
+      max-width: 400px;           /* límite para que no se desborde */
+      text-align: center;         /* centrado */
+      margin-bottom: 20px;        /* espacio debajo */
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    button {
+      padding: 12px 18px;
+      margin: 8px;
+      font-size: 20px;
+      border-radius: 6px;
+    }
+    #resultado {
+      margin-top: 25px;
+      font-size: 26px;   /* más grande para móvil */
+      font-weight: bold;
+      line-height: 1.8;  /* espacio entre líneas */
+    }
+    .ok { color: #008000; }   /* verde fuerte */
+    .error { color: #cc0000; } /* rojo fuerte */
   </style>
 </head>
 <body>
@@ -49,10 +72,9 @@
 
           if (!filaEncontrada) {
             resultadoDiv.innerHTML = `
-              Participante nuevo<br>
               <span class="ok">SI</span><br>
               <span class="ok">✅</span><br>
-              <span class="ok">Registrar</span>
+              <span class="ok">Registrar participante</span>
             `;
             return;
           }
@@ -68,31 +90,20 @@
 
           if (["focus","pretest","compra simulada","mercadito"].includes(categoria)) {
             if (totalMeses > 24) {
-              resultado = "SI";
-              gancho = "✅";
-              leyenda = categoria + " + 2 años";
+              resultado = "SI"; gancho = "✅"; leyenda = categoria + " + 2 años";
             } else {
-              resultado = "NO";
-              gancho = "❌";
-              leyenda = categoria + " - 2 años";
+              resultado = "NO"; gancho = "❌"; leyenda = categoria + " - 2 años";
             }
           } else if (categoria === "otros") {
             if (totalMeses > 6) {
-              resultado = "SI";
-              gancho = "✅";
-              leyenda = "Otros + 6 meses";
+              resultado = "SI"; gancho = "✅"; leyenda = "Otros + 6 meses";
             } else {
-              resultado = "NO";
-              gancho = "❌";
-              leyenda = "Otros - 6 meses";
+              resultado = "NO"; gancho = "❌"; leyenda = "Otros - 6 meses";
             }
           } else {
-            resultado = "NO";
-            gancho = "❌";
-            leyenda = "Categoría no reconocida";
+            resultado = "NO"; gancho = "❌"; leyenda = "Categoría no reconocida";
           }
 
-          // 👉 Orden: Nombre → Resultado → Gancho → Mensaje
           const clase = (resultado === "SI") ? "ok" : "error";
           resultadoDiv.innerHTML = `
             ${nombre}<br>
@@ -116,7 +127,7 @@
     function convertirATotalMeses(texto) {
       let años = 0, meses = 0;
       const matchAnios = texto.match(/(\d+)\s*años/);
-      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/); // reconoce "mes" y "meses"
+      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/);
       if (matchAnios) años = parseInt(matchAnios[1]);
       if (matchMeses) meses = parseInt(matchMeses[1]);
       return (años * 12) + meses;
