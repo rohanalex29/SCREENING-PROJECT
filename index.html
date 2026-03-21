@@ -1,160 +1,29 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>BUSCAR DNI</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 40px;
-      background-color: #f0f0f0;
-    }
-    h1 { margin-bottom: 20px; }
+input {
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 auto 25px auto;
+  border: 2px solid #333;
+  border-radius: 12px;
+  display: block;
+  background-color: #fff;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
 
-    input {
-      width: 95%;
-      max-width: 500px;
-      text-align: center;
-      margin: 0 auto 30px auto;
-      border: 2px solid #333;
-      border-radius: 14px;
-      display: block;
-      background-color: #fff;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
+/* 📱 Vertical (portrait) */
+@media screen and (orientation: portrait) {
+  input {
+    padding: 18px;
+    font-size: 28px;
+    width: 85%;
+  }
+}
 
-    /* 📱 Estilo por defecto (portrait) */
-    input {
-      padding: 20px;
-      font-size: 34px;
-    }
-
-    /* 📱 Ajuste automático en horizontal */
-    @media screen and (orientation: landscape) {
-      input {
-        padding: 14px;
-        font-size: 24px;
-      }
-    }
-
-    button {
-      padding: 14px 22px;
-      margin: 10px;
-      font-size: 22px;
-      border-radius: 8px;
-      border: none;
-      background-color: #333;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:disabled { background-color: #aaa; cursor: not-allowed; }
-
-    #resultado {
-      margin-top: 30px;
-      font-size: 28px;
-      font-weight: bold;
-      line-height: 1.8;
-    }
-    .ok { color: #008000; }
-    .error { color: #cc0000; }
-  </style>
-</head>
-<body>
-  <h1>BUSCAR DNI</h1>
-  <input type="text" id="dni" placeholder="Ingrese DNI" maxlength="8">
-  <br>
-  <button id="btnVerificar" disabled>Verificar</button>
-  <button id="btnLimpiar">Limpiar</button>
-  <div id="resultado"></div>
-
-  <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yf0o4_bk8CmPKzNB4DgebCSqItCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hIaQ/pub?output=csv";
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const dniInput = document.getElementById("dni");
-      const btnVerificar = document.getElementById("btnVerificar");
-      const btnLimpiar = document.getElementById("btnLimpiar");
-      const resultadoDiv = document.getElementById("resultado");
-
-      dniInput.addEventListener("input", () => {
-        const dni = dniInput.value.trim();
-        btnVerificar.disabled = !(/^\d{8}$/.test(dni));
-      });
-
-      btnVerificar.addEventListener("click", async () => {
-        const dni = dniInput.value.trim();
-        if (!dni) {
-          resultadoDiv.innerHTML = "<span class='error'>❌ Ingrese un DNI</span>";
-          return;
-        }
-
-        try {
-          const response = await fetch(CSV_URL);
-          const data = await response.text();
-          const filas = data.split("\n").map(f => f.split(","));
-          const filaEncontrada = filas.find(fila => fila[0] === dni);
-
-          if (!filaEncontrada) {
-            resultadoDiv.innerHTML = `
-              <span class="ok">SI</span><br>
-              <span class="ok">✅</span><br>
-              <span class="ok">Registrar participante</span>
-            `;
-            return;
-          }
-
-          const nombre = (filaEncontrada[8] || "Sin nombre").trim();
-          const hoy = (filaEncontrada[11] || "").trim();
-          const categoria = (filaEncontrada[13] || "").trim().toLowerCase();
-
-          let resultado = "", gancho = "", leyenda = "";
-          const totalMeses = convertirATotalMeses(hoy);
-
-          if (["focus","pretest","compra simulada","mercadito"].includes(categoria)) {
-            if (totalMeses > 24) {
-              resultado = "SI"; gancho = "✅"; leyenda = categoria + " + 2 años";
-            } else {
-              resultado = "NO"; gancho = "❌"; leyenda = categoria + " - 2 años";
-            }
-          } else if (categoria === "otros") {
-            if (totalMeses > 6) {
-              resultado = "SI"; gancho = "✅"; leyenda = "Otros + 6 meses";
-            } else {
-              resultado = "NO"; gancho = "❌"; leyenda = "Otros - 6 meses";
-            }
-          } else {
-            resultado = "NO"; gancho = "❌"; leyenda = "Categoría no reconocida";
-          }
-
-          const clase = (resultado === "SI") ? "ok" : "error";
-          resultadoDiv.innerHTML = `
-            ${nombre}<br>
-            <span class="${clase}">${resultado}</span><br>
-            <span class="${clase}">${gancho}</span><br>
-            <span class="${clase}">${leyenda}</span>
-          `;
-        } catch (error) {
-          resultadoDiv.innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
-          console.error(error);
-        }
-      });
-
-      btnLimpiar.addEventListener("click", () => {
-        dniInput.value = "";
-        resultadoDiv.innerHTML = "";
-        btnVerificar.disabled = true;
-      });
-    });
-
-    function convertirATotalMeses(texto) {
-      let años = 0, meses = 0;
-      const matchAnios = texto.match(/(\d+)\s*años/);
-      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/);
-      if (matchAnios) años = parseInt(matchAnios[1]);
-      if (matchMeses) meses = parseInt(matchMeses[1]);
-      return (años * 12) + meses;
-    }
-  </script>
-</body>
-</html>
+/* 📱 Horizontal (landscape) */
+@media screen and (orientation: landscape) {
+  input {
+    padding: 12px;
+    font-size: 22px;
+    width: 70%;
+  }
+}
