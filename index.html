@@ -67,14 +67,14 @@
             return;
           }
 
-          const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I
-          const hoy = (filaEncontrada[11] || "").trim();               // Columna L
-          const categoria = (filaEncontrada[13] || "").trim().toLowerCase(); // Columna N
+          const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I: nombre
+          const hoy = (filaEncontrada[11] || "").trim();               // Columna L: tiempo acumulado
+          const categoria = (filaEncontrada[13] || "").trim().toLowerCase(); // Columna N: categoría
 
           let resultado = "", gancho = "", leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
 
-          if (["focus","pretest","compra simulada","mercadito"].includes(categoria)) {
+          if (categoria === "focus/pretest/compra simulada/mercadito") {
             if (totalMeses > 24) {
               resultado = "SI"; gancho = "✅"; leyenda = categoria + " + 2 años";
             } else {
