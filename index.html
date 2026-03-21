@@ -103,4 +103,38 @@
               clase = "error";
             }
           } else {
-            resultado = "NO PASA FILTRO"; gan
+            resultado = "NO PASA FILTRO"; gancho = "❌";
+            leyenda = "Categoría no reconocida";
+            clase = "error";
+          }
+
+          resultadoDiv.innerHTML = `
+            ${nombre}<br>
+            <span class="${clase}">${resultado}</span><br>
+            <span class="${clase}">${gancho}</span><br>
+            <span class="${clase}">${leyenda}</span>
+          `;
+        } catch (error) {
+          resultadoDiv.innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
+          console.error(error);
+        }
+      });
+
+      btnLimpiar.addEventListener("click", () => {
+        dniInput.value = "";
+        resultadoDiv.innerHTML = "";
+        btnVerificar.disabled = true;
+      });
+    });
+
+    function convertirATotalMeses(texto) {
+      let años = 0, meses = 0;
+      const matchAnios = texto.match(/(\d+)\s*años/);
+      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/);
+      if (matchAnios) años = parseInt(matchAnios[1]);
+      if (matchMeses) meses = parseInt(matchMeses[1]);
+      return (años * 12) + meses;
+    }
+  </script>
+</body>
+</html>
