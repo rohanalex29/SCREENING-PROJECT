@@ -67,9 +67,9 @@
 
           if (!filaEncontrada) {
             resultadoDiv.innerHTML = `
-              <span class="ok">SI</span><br>
+              <span class="ok">PASA FILTRO</span><br>
               <span class="ok">✅</span><br>
-              <span class="ok">Registrar participante</span>
+              <span class="ok">NO ESTÁ EN LA BASE DE DATOS</span>
             `;
             return;
           }
@@ -79,26 +79,35 @@
           const categoriaOriginal = (filaEncontrada[13] || "").trim(); // valor tal cual en la hoja
           let categoria = categoriaOriginal.toLowerCase().replace(/\s+/g, " "); // normalizado
 
-          let resultado = "", gancho = "", leyenda = "";
+          let resultado = "", gancho = "", leyenda = "", clase = "";
           const totalMeses = convertirATotalMeses(hoy);
 
           if (categoria === "focus/pretest/compra simulada/mercadito") {
             if (totalMeses > 24) {
-              resultado = "SI"; gancho = "✅"; leyenda = categoriaOriginal + " + 2 años";
+              resultado = "SI PASA FILTRO"; gancho = "✅";
+              leyenda = "TIENE VISITA DE MÁS DE 2 AÑOS EN PROYECTOS " + categoriaOriginal;
+              clase = "ok";
             } else {
-              resultado = "NO"; gancho = "❌"; leyenda = categoriaOriginal + " - 2 años";
+              resultado = "NO PASA FILTRO"; gancho = "❌";
+              leyenda = "TIENE VISITA DE MENOS DE 2 AÑOS EN PROYECTOS " + categoriaOriginal;
+              clase = "error";
             }
           } else if (categoria === "otros") {
             if (totalMeses > 6) {
-              resultado = "SI"; gancho = "✅"; leyenda = "Otros + 6 meses";
+              resultado = "SI PASA FILTRO"; gancho = "✅";
+              leyenda = "TIENE VISITA DE MÁS DE 6 MESES EN Otros PROYECTOS";
+              clase = "ok";
             } else {
-              resultado = "NO"; gancho = "❌"; leyenda = "Otros - 6 meses";
+              resultado = "NO PASA FILTRO"; gancho = "❌";
+              leyenda = "TIENE VISITA DE MENOS DE 6 MESES EN Otros PROYECTOS";
+              clase = "error";
             }
           } else {
-            resultado = "NO"; gancho = "❌"; leyenda = "Categoría no reconocida";
+            resultado = "NO PASA FILTRO"; gancho = "❌";
+            leyenda = "Categoría no reconocida";
+            clase = "error";
           }
 
-          const clase = (resultado === "SI") ? "ok" : "error";
           resultadoDiv.innerHTML = `
             ${nombre}<br>
             <span class="${clase}">${resultado}</span><br>
