@@ -10,22 +10,34 @@
       margin-top: 40px;
       background-color: #f0f0f0;
     }
-    h1 {
-      margin-bottom: 20px;
-    }
+    h1 { margin-bottom: 20px; }
+
     input {
-      padding: 22px;              /* más alto y cómodo */
-      font-size: 34px;            /* fuente muy grande */
-      width: 95%;                 /* ocupa casi toda la pantalla */
-      max-width: 500px;           /* límite en pantallas grandes */
-      text-align: center;         /* centrado */
-      margin: 0 auto 30px auto;   /* centrado con espacio debajo */
+      width: 95%;
+      max-width: 500px;
+      text-align: center;
+      margin: 0 auto 30px auto;
       border: 2px solid #333;
       border-radius: 14px;
-      display: block;             /* asegura que se centre */
+      display: block;
       background-color: #fff;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* sombra elegante */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
+
+    /* 📱 Estilo por defecto (portrait) */
+    input {
+      padding: 20px;
+      font-size: 34px;
+    }
+
+    /* 📱 Ajuste automático en horizontal */
+    @media screen and (orientation: landscape) {
+      input {
+        padding: 14px;
+        font-size: 24px;
+      }
+    }
+
     button {
       padding: 14px 22px;
       margin: 10px;
@@ -36,18 +48,16 @@
       color: #fff;
       cursor: pointer;
     }
-    button:disabled {
-      background-color: #aaa;
-      cursor: not-allowed;
-    }
+    button:disabled { background-color: #aaa; cursor: not-allowed; }
+
     #resultado {
       margin-top: 30px;
-      font-size: 28px;   /* más grande para móvil */
+      font-size: 28px;
       font-weight: bold;
-      line-height: 1.8;  /* espacio entre líneas */
+      line-height: 1.8;
     }
-    .ok { color: #008000; }   /* verde fuerte */
-    .error { color: #cc0000; } /* rojo fuerte */
+    .ok { color: #008000; }
+    .error { color: #cc0000; }
   </style>
 </head>
 <body>
@@ -98,9 +108,7 @@
           const hoy = (filaEncontrada[11] || "").trim();
           const categoria = (filaEncontrada[13] || "").trim().toLowerCase();
 
-          let resultado = "";
-          let gancho = "";
-          let leyenda = "";
+          let resultado = "", gancho = "", leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
 
           if (["focus","pretest","compra simulada","mercadito"].includes(categoria)) {
