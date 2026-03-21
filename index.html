@@ -40,9 +40,16 @@
       const btnLimpiar = document.getElementById("btnLimpiar");
       const resultadoDiv = document.getElementById("resultado");
 
+      // Ejecuta verificación automáticamente al escribir o sobreescribir
       dniInput.addEventListener("input", () => {
         const dni = dniInput.value.trim();
         btnVerificar.disabled = !(/^\d{8}$/.test(dni));
+
+        if (/^\d{8}$/.test(dni)) {
+          btnVerificar.click(); // dispara verificación automática
+        } else {
+          resultadoDiv.innerHTML = ""; // limpia resultado si se borra o cambia
+        }
       });
 
       btnVerificar.addEventListener("click", async () => {
@@ -69,17 +76,17 @@
 
           const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I: nombre
           const hoy = (filaEncontrada[11] || "").trim();               // Columna L: tiempo acumulado
-          let categoria = (filaEncontrada[13] || "").trim().toLowerCase();
-          categoria = categoria.replace(/\s+/g, " "); // normaliza espacios
+          const categoriaOriginal = (filaEncontrada[13] || "").trim(); // valor tal cual en la hoja
+          let categoria = categoriaOriginal.toLowerCase().replace(/\s+/g, " "); // normalizado
 
           let resultado = "", gancho = "", leyenda = "";
           const totalMeses = convertirATotalMeses(hoy);
 
           if (categoria === "focus/pretest/compra simulada/mercadito") {
             if (totalMeses > 24) {
-              resultado = "SI"; gancho = "✅"; leyenda = categoria + " + 2 años";
+              resultado = "SI"; gancho = "✅"; leyenda = categoriaOriginal + " + 2 años";
             } else {
-              resultado = "NO"; gancho = "❌"; leyenda = categoria + " - 2 años";
+              resultado = "NO"; gancho = "❌"; leyenda = categoriaOriginal + " - 2 años";
             }
           } else if (categoria === "otros") {
             if (totalMeses > 6) {
