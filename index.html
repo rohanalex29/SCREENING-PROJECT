@@ -1,140 +1,194 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>BUSCAR DNI</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; background-color: #f0f0f0; }
-    h1 { margin-bottom: 25px; font-size: 40px; }
-    input {
-      padding: 22px; font-size: 36px; width: 95%; max-width: 500px;
-      text-align: center; margin: 0 auto 30px auto; border: 2px solid #333;
-      border-radius: 14px; display: block; background-color: #fff;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-    button {
-      padding: 16px 24px; margin: 12px; font-size: 26px;
-      border-radius: 10px; border: none; background-color: #333;
-      color: #fff; cursor: pointer;
-    }
-    button:disabled { background-color: #aaa; cursor: not-allowed; }
-    #resultado { margin-top: 35px; font-size: 32px; font-weight: bold; line-height: 2; }
-    .ok { color: #008000; }
-    .error { color: #cc0000; }
-  </style>
-</head>
-<body>
-  <h1>BUSCAR DNI</h1>
-  <input type="text" id="dni" placeholder="Ingrese DNI" maxlength="8">
-  <br>
-  <button id="btnVerificar" disabled>Verificar</button>
-  <button id="btnLimpiar">Limpiar</button>
-  <div id="resultado"></div>
-
-  <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yf0o4_bk8CmPKzNB4DgebCSqItCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hIaQ/pub?output=csv";
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const dniInput = document.getElementById("dni");
-      const btnVerificar = document.getElementById("btnVerificar");
-      const btnLimpiar = document.getElementById("btnLimpiar");
-      const resultadoDiv = document.getElementById("resultado");
-
-      // Ejecuta verificación automáticamente al escribir o sobreescribir
-      dniInput.addEventListener("input", () => {
-        const dni = dniInput.value.trim();
-        btnVerificar.disabled = !(/^\d{8}$/.test(dni));
-
-        if (/^\d{8}$/.test(dni)) {
-          btnVerificar.click(); // dispara verificación automática
-        } else {
-          resultadoDiv.innerHTML = ""; // limpia resultado si se borra o cambia
-        }
-      });
-
-      btnVerificar.addEventListener("click", async () => {
-        const dni = dniInput.value.trim();
-        if (!dni) {
-          resultadoDiv.innerHTML = "<span class='error'>❌ Ingrese un DNI</span>";
-          return;
-        }
-
-        try {
-          const response = await fetch(CSV_URL);
-          const data = await response.text();
-          const filas = data.split("\n").map(f => f.split(","));
-          const filaEncontrada = filas.find(fila => fila[0] === dni);
-
-          if (!filaEncontrada) {
-            resultadoDiv.innerHTML = `
-              <span class="ok">SI PASA FILTRO</span><br>
-              <span class="ok">✅</span><br>
-              <span class="ok">NO ESTÁ EN LA BASE DE DATOS</span>
-            `;
-            return;
-          }
-
-          const nombre = (filaEncontrada[8] || "Sin nombre").trim();   // Columna I: nombre
-          const hoy = (filaEncontrada[11] || "").trim();               // Columna L: tiempo acumulado
-          const categoriaOriginal = (filaEncontrada[13] || "").trim(); // valor tal cual en la hoja
-          let categoria = categoriaOriginal.toLowerCase().replace(/\s+/g, " "); // normalizado
-
-          let resultado = "", gancho = "", leyenda = "", clase = "";
-          const totalMeses = convertirATotalMeses(hoy);
-
-          if (categoria === "focus/pretest/compra simulada/mercadito") {
-            if (totalMeses > 24) {
-              resultado = "SI PASA FILTRO"; gancho = "✅";
-              leyenda = "TIENE VISITA DE MÁS DE 2 AÑOS EN PROYECTOS " + categoriaOriginal;
-              clase = "ok";
-            } else {
-              resultado = "NO PASA FILTRO"; gancho = "❌";
-              leyenda = "TIENE VISITA DE MENOS DE 2 AÑOS EN PROYECTOS " + categoriaOriginal;
-              clase = "error";
-            }
-          } else if (categoria === "otros") {
-            if (totalMeses > 6) {
-              resultado = "SI PASA FILTRO"; gancho = "✅";
-              leyenda = "TIENE VISITA DE MÁS DE 6 MESES EN Otros PROYECTOS";
-              clase = "ok";
-            } else {
-              resultado = "NO PASA FILTRO"; gancho = "❌";
-              leyenda = "TIENE VISITA DE MENOS DE 6 MESES EN Otros PROYECTOS";
-              clase = "error";
-            }
-          } else {
-            resultado = "NO PASA FILTRO"; gancho = "❌";
-            leyenda = "Categoría no reconocida";
-            clase = "error";
-          }
-
-          resultadoDiv.innerHTML = `
-            ${nombre}<br>
-            <span class="${clase}">${resultado}</span><br>
-            <span class="${clase}">${gancho}</span><br>
-            <span class="${clase}">${leyenda}</span>
-          `;
-        } catch (error) {
-          resultadoDiv.innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";
-          console.error(error);
-        }
-      });
-
-      btnLimpiar.addEventListener("click", () => {
-        dniInput.value = "";
-        resultadoDiv.innerHTML = "";
-        btnVerificar.disabled = true;
-      });
-    });
-
-    function convertirATotalMeses(texto) {
-      let años = 0, meses = 0;
-      const matchAnios = texto.match(/(\d+)\s*años/);
-      const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/);
-      if (matchAnios) años = parseInt(matchAnios[1]);
-      if (matchMeses) meses = parseInt(matchMeses[1]);
-      return (años * 12) + meses;
-    }
-  </script>
-</body>
-</html>
+  <!DOCTYPE html>                                                                                                                                    
+  <html lang="es">                                                                                                                                   
+  <head>                                                                                                                                             
+    <meta charset="UTF-8">                                                                                                                           
+    <title>BUSCAR DNI</title>                                                                                                                        
+    <style>                                                                                                                                          
+      body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; background-color: #f0f0f0; }                                      
+      h1 { margin-bottom: 25px; font-size: 40px; }                                                                                                   
+      input {                                                                                                                                        
+        padding: 22px; font-size: 36px; width: 95%; max-width: 500px;                                                                                
+        text-align: center; margin: 0 auto 30px auto; border: 2px solid #333;                                                                        
+        border-radius: 14px; display: block; background-color: #fff;                                                                                 
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);                                                                                                     
+      }                                                                                                                                              
+      button {                                                                                                                                       
+        padding: 16px 24px; margin: 12px; font-size: 26px;                                                                                           
+        border-radius: 10px; border: none; background-color: #333;                                                                                   
+        color: #fff; cursor: pointer;                                                                                                                
+      }                                                                                                                                              
+      button:disabled { background-color: #aaa; cursor: not-allowed; }                                                                               
+      #resultado { margin-top: 35px; font-size: 32px; font-weight: bold; line-height: 2; }                                                           
+      .ok { color: #008000; }                                                                                                                        
+      .error { color: #cc0000; }                                                                                                                     
+      .historial {                                                                                                                                   
+        font-size: 18px;                                                                                                                             
+        font-weight: normal;                                                                                                                         
+        margin-top: 20px;                                                                                                                            
+        text-align: left;                                                                                                                            
+        display: inline-block;                                                                                                                       
+        background: #fff;                                                                                                                            
+        padding: 15px 25px;                                                                                                                          
+        border-radius: 10px;                                                                                                                         
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);                                                                                                       
+      }                                                                                                                                              
+      .historial-item {                                                                                                                              
+        padding: 8px 0;                                                                                                                              
+        border-bottom: 1px solid #eee;                                                                                                               
+      }                                                                                                                                              
+      .historial-item:last-child { border-bottom: none; }                                                                                            
+      .historial-fail { color: #cc0000; }                                                                                                            
+      .historial-pass { color: #008000; }                                                                                                            
+    </style>                                                                                                                                         
+  </head>                                                                                                                                            
+  <body>                                                                                                                                             
+    <h1>BUSCAR DNI</h1>                                                                                                                              
+    <input type="text" id="dni" placeholder="Ingrese DNI" maxlength="8">                                                                             
+    <br>                                                                                                                                             
+    <button id="btnVerificar" disabled>Verificar</button>                                                                                            
+    <button id="btnLimpiar">Limpiar</button>                                                                                                         
+    <div id="resultado"></div>                                                                                                                       
+                                                                                                                                                     
+    <script>                                                                                                                                         
+      const CSV_URL =                                                                                                                                
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yf0o4_bk8CmPKzNB4DgebCSqItCnFqI7z3anYPb2NXwCCMUuCtcotRJQr1hIaQ/pub?output=csv";                
+                                                                                                                                                     
+      document.addEventListener("DOMContentLoaded", () => {                                                                                          
+        const dniInput = document.getElementById("dni");                                                                                             
+        const btnVerificar = document.getElementById("btnVerificar");                                                                                
+        const btnLimpiar = document.getElementById("btnLimpiar");                                                                                    
+        const resultadoDiv = document.getElementById("resultado");                                                                                   
+                                                                                                                                                     
+        dniInput.addEventListener("input", () => {                                                                                                   
+          const dni = dniInput.value.trim();                                                                                                         
+          btnVerificar.disabled = !(/^\d{8}$/.test(dni));                                                                                            
+                                                                                                                                                     
+          if (/^\d{8}$/.test(dni)) {                                                                                                                 
+            btnVerificar.click();                                                                                                                    
+          } else {                                                                                                                                   
+            resultadoDiv.innerHTML = "";                                                                                                             
+          }                                                                                                                                          
+        });                                                                                                                                          
+                                                                                                                                                     
+        btnVerificar.addEventListener("click", async () => {                                                                                         
+          const dni = dniInput.value.trim();                                                                                                         
+          if (!dni) {                                                                                                                                
+            resultadoDiv.innerHTML = "<span class='error'>❌ Ingrese un DNI</span>";                                                                 
+            return;                                                                                                                                  
+          }                                                                                                                                          
+                                                                                                                                                     
+          try {                                                                                                                                      
+            const response = await fetch(CSV_URL);                                                                                                   
+            const data = await response.text();                                                                                                      
+            const filas = data.split("\n").map(f => f.split(","));                                                                                   
+                                                                                                                                                     
+            // Get ALL rows matching this DNI                                                                                                        
+            const filasEncontradas = filas.filter(fila => fila[0] === dni);                                                                          
+                                                                                                                                                     
+            // If no records found, person passes                                                                                                    
+            if (filasEncontradas.length === 0) {                                                                                                     
+              resultadoDiv.innerHTML = `                                                                                                             
+                <span class="ok">SI PASA FILTRO</span><br>                                                                                           
+                <span class="ok">✅</span><br>                                                                                                       
+                <span class="ok">NO ESTÁ EN LA BASE DE DATOS</span>                                                                                  
+              `;                                                                                                                                     
+              return;                                                                                                                                
+            }                                                                                                                                        
+                                                                                                                                                     
+            // Get name from first record                                                                                                            
+            const nombre = (filasEncontradas[0][8] || "Sin nombre").trim();                                                                          
+                                                                                                                                                     
+            // Evaluate ALL records                                                                                                                  
+            const evaluaciones = filasEncontradas.map(fila => {                                                                                      
+              const hoy = (fila[11] || "").trim();                                                                                                   
+              const categoriaOriginal = (fila[13] || "").trim();                                                                                     
+              const categoria = categoriaOriginal.toLowerCase().replace(/\s+/g, " ");                                                                
+              const totalMeses = convertirATotalMeses(hoy);                                                                                          
+                                                                                                                                                     
+              let pasa = false;                                                                                                                      
+              let leyenda = "";                                                                                                                      
+                                                                                                                                                     
+              if (categoria === "focus/pretest/compra simulada/mercadito") {                                                                         
+                if (totalMeses > 24) {                                                                                                               
+                  pasa = true;                                                                                                                       
+                  leyenda = `${categoriaOriginal}: ${hoy} (>24 meses)`;                                                                              
+                } else {                                                                                                                             
+                  pasa = false;                                                                                                                      
+                  leyenda = `${categoriaOriginal}: ${hoy} (≤24 meses)`;                                                                              
+                }                                                                                                                                    
+              } else if (categoria === "otros") {                                                                                                    
+                if (totalMeses > 6) {                                                                                                                
+                  pasa = true;                                                                                                                       
+                  leyenda = `Otros: ${hoy} (>6 meses)`;                                                                                              
+                } else {                                                                                                                             
+                  pasa = false;                                                                                                                      
+                  leyenda = `Otros: ${hoy} (≤6 meses)`;                                                                                              
+                }                                                                                                                                    
+              } else {                                                                                                                               
+                pasa = false;                                                                                                                        
+                leyenda = `Categoría no reconocida: "${categoriaOriginal}"`;                                                                         
+              }                                                                                                                                      
+                                                                                                                                                     
+              return { pasa, leyenda, categoria: categoriaOriginal, tiempo: hoy };                                                                   
+            });                                                                                                                                      
+                                                                                                                                                     
+            // Person passes ONLY if ALL records pass                                                                                                
+            const todosAprobados = evaluaciones.every(e => e.pasa);                                                                                  
+            const cantidadRegistros = evaluaciones.length;                                                                                           
+                                                                                                                                                     
+            // Build history HTML                                                                                                                    
+            const historialHTML = evaluaciones.map(e => `                                                                                            
+              <div class="historial-item ${e.pasa ? 'historial-pass' : 'historial-fail'}">                                                           
+                ${e.pasa ? '✅' : '❌'} ${e.leyenda}                                                                                                 
+              </div>                                                                                                                                 
+            `).join('');                                                                                                                             
+                                                                                                                                                     
+            if (todosAprobados) {                                                                                                                    
+              resultadoDiv.innerHTML = `                                                                                                             
+                ${nombre}<br>                                                                                                                        
+                <span class="ok">SI PASA FILTRO</span><br>                                                                                           
+                <span class="ok">✅</span><br>                                                                                                       
+                <span class="ok">${cantidadRegistros} registro(s) encontrado(s) - TODOS APROBADOS</span>                                             
+                <div class="historial">                                                                                                              
+                  <strong>Historial de participaciones:</strong><br>                                                                                 
+                  ${historialHTML}                                                                                                                   
+                </div>                                                                                                                               
+              `;                                                                                                                                     
+            } else {                                                                                                                                 
+              const cantidadFallidos = evaluaciones.filter(e => !e.pasa).length;                                                                     
+              resultadoDiv.innerHTML = `                                                                                                             
+                ${nombre}<br>                                                                                                                        
+                <span class="error">NO PASA FILTRO</span><br>                                                                                        
+                <span class="error">❌</span><br>                                                                                                    
+                <span class="error">${cantidadFallidos} de ${cantidadRegistros} registro(s) NO PASA(N)</span>                                        
+                <div class="historial">                                                                                                              
+                  <strong>Historial de participaciones:</strong><br>                                                                                 
+                  ${historialHTML}                                                                                                                   
+                </div>                                                                                                                               
+              `;                                                                                                                                     
+            }                                                                                                                                        
+                                                                                                                                                     
+          } catch (error) {                                                                                                                          
+            resultadoDiv.innerHTML = "<span class='error'>❌ Error al leer la hoja</span>";                                                          
+            console.error(error);                                                                                                                    
+          }                                                                                                                                          
+        });                                                                                                                                          
+                                                                                                                                                     
+        btnLimpiar.addEventListener("click", () => {                                                                                                 
+          dniInput.value = "";                                                                                                                       
+          resultadoDiv.innerHTML = "";                                                                                                               
+          btnVerificar.disabled = true;                                                                                                              
+        });                                                                                                                                          
+      });                                                                                                                                            
+                                                                                                                                                     
+      function convertirATotalMeses(texto) {                                                                                                         
+        let años = 0, meses = 0;                                                                                                                     
+        const matchAnios = texto.match(/(\d+)\s*años?/);                                                                                             
+        const matchMeses = texto.match(/(\d+)\s*mes(?:es)?/);                                                                                        
+        if (matchAnios) años = parseInt(matchAnios[1]);                                                                                              
+        if (matchMeses) meses = parseInt(matchMeses[1]);                                                                                             
+        return (años * 12) + meses;                                                                                                                  
+      }                                                                                                                                              
+    </script>                                                                                                                                        
+  </body>                                                                                                                                            
+  </html> 
