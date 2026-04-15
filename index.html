@@ -1,4 +1,4 @@
-  <!DOCTYPE html>                                                                                                                                    
+    <!DOCTYPE html>                                                                                                                                    
   <html lang="es">                                                                                                                                   
   <head>                                                                                                                                             
     <meta charset="UTF-8">                                                                                                                           
@@ -132,9 +132,10 @@
               return { pasa, leyenda, categoria: categoriaOriginal, tiempo: hoy };                                                                   
             });                                                                                                                                      
                                                                                                                                                      
-            // Person passes ONLY if ALL records pass                                                                                                
-            const todosAprobados = evaluaciones.every(e => e.pasa);                                                                                  
+            // Person passes if AT LEAST ONE record passes                                                                                           
+            const algunoAprobado = evaluaciones.some(e => e.pasa);                                                                                   
             const cantidadRegistros = evaluaciones.length;                                                                                           
+            const cantidadAprobados = evaluaciones.filter(e => e.pasa).length;                                                                       
                                                                                                                                                      
             // Build history HTML                                                                                                                    
             const historialHTML = evaluaciones.map(e => `                                                                                            
@@ -143,24 +144,23 @@
               </div>                                                                                                                                 
             `).join('');                                                                                                                             
                                                                                                                                                      
-            if (todosAprobados) {                                                                                                                    
+            if (algunoAprobado) {                                                                                                                    
               resultadoDiv.innerHTML = `                                                                                                             
                 ${nombre}<br>                                                                                                                        
                 <span class="ok">SI PASA FILTRO</span><br>                                                                                           
                 <span class="ok">✅</span><br>                                                                                                       
-                <span class="ok">${cantidadRegistros} registro(s) encontrado(s) - TODOS APROBADOS</span>                                             
+                <span class="ok">${cantidadAprobados} de ${cantidadRegistros} registro(s) APROBADO(S)</span>                                         
                 <div class="historial">                                                                                                              
                   <strong>Historial de participaciones:</strong><br>                                                                                 
                   ${historialHTML}                                                                                                                   
                 </div>                                                                                                                               
               `;                                                                                                                                     
             } else {                                                                                                                                 
-              const cantidadFallidos = evaluaciones.filter(e => !e.pasa).length;                                                                     
               resultadoDiv.innerHTML = `                                                                                                             
                 ${nombre}<br>                                                                                                                        
                 <span class="error">NO PASA FILTRO</span><br>                                                                                        
                 <span class="error">❌</span><br>                                                                                                    
-                <span class="error">${cantidadFallidos} de ${cantidadRegistros} registro(s) NO PASA(N)</span>                                        
+                <span class="error">${cantidadRegistros} registro(s) - NINGUNO APROBADO</span>                                                       
                 <div class="historial">                                                                                                              
                   <strong>Historial de participaciones:</strong><br>                                                                                 
                   ${historialHTML}                                                                                                                   
@@ -191,4 +191,5 @@
       }                                                                                                                                              
     </script>                                                                                                                                        
   </body>                                                                                                                                            
-  </html> 
+  </html>                                                                                                                                            
+                            
